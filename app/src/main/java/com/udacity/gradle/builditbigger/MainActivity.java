@@ -2,28 +2,25 @@ package com.udacity.gradle.builditbigger;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-
-import com.example.Joker;
 
 
 public class MainActivity extends ActionBarActivity {
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
-
-    Joker mJokeProvider;
-
-    public MainActivity() {
-        mJokeProvider = new Joker();
-    }
+    private  static final String MYFRAGMENT_TAG = "MYFRAGMENT_TAG";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment, new MainActivityFragment(), MYFRAGMENT_TAG)
+                    .commit();
+        }
+     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,15 +44,4 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view){
-        Log.v(LOG_TAG, "+++++ tellJoke called") ;
-        new JokeFetcherAsyncTask().execute(this);
-/**        String jokeStr = mJokeProvider.getJoke();
-        Log.v(LOG_TAG, "+++++"+ jokeStr) ;
-//        Toast.makeText(this, jokeStr, Toast.LENGTH_SHORT).show();
-        mFetcher.doInBackground(jokeStr)
-        Intent intent = new Intent(this, MessageDisplayActivity.class);
-        intent.putExtra(MessageDisplayActivity.JOKE_MESSAGE, jokeStr);
-        startActivity(intent);   */
-    }
 }

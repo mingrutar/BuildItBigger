@@ -1,11 +1,8 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.coderming.myandroidlib.MessageDisplayActivity;
 import com.example.Joker;
 import com.example.coderming.myjoker.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -18,12 +15,13 @@ import java.io.IOException;
 /**
  * Created by linna on 7/8/2016.
  */
-public class JokeFetcherAsyncTask extends AsyncTask<Context, Void, String> {
+public class JokeFetcherAsyncTask extends AsyncTask<NewJokeListener, Void, String> {
     private static final String LOG_TAG = JokeFetcherAsyncTask.class.getSimpleName();
     private static MyApi mApiService;
-    private Context mContext;
+    private NewJokeListener mJokeChangeListener;
+
     @Override
-    protected String doInBackground(Context... params) {
+    protected String doInBackground(NewJokeListener ... params) {
        Log.d(LOG_TAG, "+++++doInBackground is called");
        if  (null == mApiService) {
            MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(),
@@ -43,7 +41,7 @@ public class JokeFetcherAsyncTask extends AsyncTask<Context, Void, String> {
            mApiService = builder.build();
            Log.d(LOG_TAG, "++++mApiService is built");
        }
-        mContext = params[0];
+        mJokeChangeListener = params[0];
 
         try {
             String jokeStr = mApiService.sayJoke().execute().getData();
@@ -62,10 +60,8 @@ public class JokeFetcherAsyncTask extends AsyncTask<Context, Void, String> {
             jokeStr = result;
         }
         Log.d(LOG_TAG, "++++ onPostExecute: result= "+jokeStr);
-        Intent intent = new Intent(mContext, MessageDisplayActivity.class);
-        intent.putExtra(MessageDisplayActivity.JOKE_MESSAGE, jokeStr);
-        mContext.startActivity(intent);
-
-//        Toast.makeText(context, result, Toast.LENGTH_LONG).show();
+        if (mJokeChangeListener != null) {
+            mJokeChangeListener.updateJoke(jokeStr);
+        }
     }
 }
